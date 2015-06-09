@@ -1,2 +1,19 @@
-* 说明
-主要是生成中国的假期，以及农历凶吉情况
+* 概要
+主要是生成中国的假期，以及农历凶吉情况的ics文件，可以使用在ios的日历上面。
+* 使用
+生成
+* 细节
++ 生成ics使用的库
+https://github.com/C4ptainCrunch/ics.py
++ 假期API
+http://www.easybots.cn/holiday_api.net
+
+这里用到了
+#+BEGIN_SRC sh
+http://www.easybots.cn/api/holiday.php?m=201501,201502,...201512
+#+END_SRC
+输出格式：工作日对应结果为 0,休息日对应结果为 1, 节假日对应的结果为 2；
++ 吉凶数据
+宜忌：http://51wnl.com/YJData/2015.json
+其他命理：http://51wnl.com/moreLumarData/2015.json
+
