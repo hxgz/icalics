@@ -1,0 +1,33 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+
+install:
+- "pip install -r requirements.txt --use-wheel --download-cache $HOME/.pip-cache"
+- "pip install -r dev/requirements-test.txt --use-wheel --download-cache $HOME/.pip-cache"
+- "pip install python-coveralls --use-wheel --download-cache $HOME/.pip-cache"
+
+cache:
+  directories:
+    - $HOME/.pip-cache/
+
+sudo: false
+
+script:
+  - "python setup.py test"
+
+after_success:
+  - "coveralls"
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - "chat.freenode.net#icspy"
+    use_notice: false
+    skip_join: true
+    template:
+      - "build#%{build_number} (%{branch} - %{commit}): %{message}"
