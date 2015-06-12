@@ -15,8 +15,8 @@ class Holiday(Calendar):
     """
     _FREEDAY="休息日"
     _WORKDAY="工作日"
-    def __init__(self, imports=None, events=None, creator="介川"):
-        super(Holiday,self).__init__(imports,events,creator)
+    def __init__(self, imports=None, events=None, creator="介川",title="假日"):
+        super(Holiday,self).__init__(imports,events,creator,title=title)
     def _fixup(self,year,DateInfos):
         """
         修正假日返回的结果
@@ -76,9 +76,10 @@ class LumarTaboo(Calendar):
     """
     The almanac and taboo class
     """
-    def __init__(self, imports=None, events=None, creator="介川"):
-        super(LumarTaboo,self).__init__(imports,events,creator)
+    def __init__(self, imports=None, events=None, creator="介川",title="五行命理"):
+        super(LumarTaboo,self).__init__(imports,events,creator,title=title)
     def __get_lumar_taboo(self,year):
+        unescape_crlf='\\n'
         #宜凶
         yj_url = 'http://51wnl.com/YJData/%s.json' % year 
         #命理
@@ -109,7 +110,7 @@ class LumarTaboo(Calendar):
             else:
                 return ""
         for _mmdd,_info in resp_json.iteritems():
-            DateInfos[year+_mmdd[1:]] = "\r\n".join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
+            DateInfos[year+_mmdd[1:]] = unescape_crlf.join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
 
         try:
             response = urlopen(lumar_url,timeout=5)
@@ -122,9 +123,9 @@ class LumarTaboo(Calendar):
                 ldinfos = [_get_keyname(k)+":"+v for k,v in _info.iteritems()]
                 ldinfos.append(DateInfos[year+_mmdd])
 
-                DateInfos[year+_mmdd] = "\r\n".join(ldinfos)
+                DateInfos[year+_mmdd] = unescape_crlf.join(ldinfos)
             else:
-                DateInfos[year+_mmdd] = "\r\n".join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
+                DateInfos[year+_mmdd] = unescape_crlf.join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
 
         return DateInfos
 

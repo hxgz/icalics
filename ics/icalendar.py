@@ -30,7 +30,7 @@ class Calendar(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, imports=None, events=None, creator=None):
+    def __init__(self, imports=None, events=None, creator=None,title=None):
         """Instanciates a new Calendar.
 
         Args:
@@ -47,7 +47,8 @@ class Calendar(Component):
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
-
+        self._title=title
+        
         if events is None:
             events = EventList()
 
@@ -148,6 +149,18 @@ class Calendar(Component):
             raise ValueError('Event.creator must be unicode data not {}'.format(type(value)))
         self._creator = value
 
+    @property
+    def title(self):
+        """Get or set the calendar's title
+        """
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        if not isinstance(value, text_type):
+            raise ValueError('Calendar.title must be unicode data not {}'.format(type(value)))
+        self._title = value
+
     def clone(self):
         """
         Returns:
@@ -172,6 +185,9 @@ class Calendar(Component):
 def prodid(calendar, prodid):
     calendar._creator = prodid.value
 
+@Calendar._extracts('X-WR-CALNAME', required=True)
+def title(calendar,title):
+    calendar._title = title.value
 
 @Calendar._extracts('VERSION', required=True)
 def version(calendar, line):
@@ -246,6 +262,9 @@ def o_prodid(calendar, container):
 def o_version(calendar, container):
     container.append(ContentLine('VERSION', value='2.0'))
 
+@Calendar._outputs
+def o_title(calendar, container):
+    container.append(ContentLine('X-WR-CALNAME', value=calendar.title))
 
 @Calendar._outputs
 def o_scale(calendar, container):
