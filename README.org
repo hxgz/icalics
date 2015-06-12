@@ -1,7 +1,12 @@
 ** 概要
 主要是生成中国的假期，以及农历凶吉情况的ics文件，可以使用在ios的日历上面。
 ** 使用
-生成
++ Install
+下载代码，并且安装ics.py用到的库，python-dateutil,arrow,six.
+直接运行 *python2 icalics.py* 即可生成假日和命理
++ 配置
+参考 *Config.py*
+
 ** 细节
 + 生成ics使用的库
 https://github.com/C4ptainCrunch/ics.py

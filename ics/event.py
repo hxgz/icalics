@@ -400,7 +400,8 @@ def o_summary(event, container):
 @Event._outputs
 def o_description(event, container):
     if event.description:
-        container.append(ContentLine('DESCRIPTION', value=escape_string(event.description)))
+        #container.append(ContentLine('DESCRIPTION', value=escape_string(event.description)))
+        container.append(ContentLine('DESCRIPTION', value=event.description))
 
 
 @Event._outputs

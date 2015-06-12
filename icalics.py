@@ -5,7 +5,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from urllib2 import urlopen
-import json
+import json,datetime
 from ics import Calendar, Event
 
 import Config
@@ -23,7 +23,7 @@ class Holiday(Calendar):
         日期为周六-日，是休息日，则去掉休息日不显示。不然则是工作日
         """
         from dateutil import rrule
-        import datetime
+
         weekend = set([5, 6])
 
         for dt in rrule.rrule(rrule.DAILY,
@@ -91,8 +91,25 @@ class LumarTaboo(Calendar):
             print "Fail to get YJData,E:",e
             return DateInfos
         resp_json = json.loads(response.read())
+        def _get_keyname(key):
+            if key == "y":
+                return "宜"
+            elif key == "j":
+                return "忌"
+            elif key == "pzbj":
+                return "彭祖百忌"
+            elif key == "jsyq":
+                return "吉神宜趋"
+            elif key == "xsyj":
+                return "凶神宜忌"
+            elif key == "cs":
+                return "冲煞"
+            elif key == "wx":
+                return "五行"
+            else:
+                return ""
         for _mmdd,_info in resp_json.iteritems():
-            DateInfos[year+_mmdd[1:]] = _info
+            DateInfos[year+_mmdd[1:]] = "\r\n".join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
 
         try:
             response = urlopen(lumar_url,timeout=5)
@@ -101,31 +118,45 @@ class LumarTaboo(Calendar):
             return DateInfos
         resp_json = json.loads(response.read())
         for _mmdd,_info in resp_json.iteritems():
-            DateInfos[year+_mmdd] = _info
-            
+            if year+_mmdd in DateInfos:
+                ldinfos = [_get_keyname(k)+":"+v for k,v in _info.iteritems()]
+                ldinfos.append(DateInfos[year+_mmdd])
+
+                DateInfos[year+_mmdd] = "\r\n".join(ldinfos)
+            else:
+                DateInfos[year+_mmdd] = "\r\n".join([_get_keyname(k)+":"+v for k,v in _info.iteritems()])
+
         return DateInfos
 
     def append(self,year):
         for _date,_info in self.__get_lumar_taboo(year).iteritems():
             e = Event()
-            e.name = _info
+            e.name = "五行命理"
             e.begin = '%s-%s-%s 00:00:00' % (year,_date[4:6],_date[6:8])
             e.make_all_day()
-            e.description="edited by 介川"
+            e.description=_info
             self.events.append(e)
 
     def dump(self,file):
         with open(file, 'w') as f:
             f.writelines(self)
 
-def main():
+def dump_holiday(year):
     h=Holiday()
-    h.append("2015")
+    for index in range(Config.ics_duration[0],Config.ics_duration[1]+1):
+        h.append(str(int(year)+index))
     h.dump(Config.holiday_file)
+def dump_lumartaboo(year):
+    lt=LumarTaboo()
+    for index in range(Config.ics_duration[0],Config.ics_duration[1]+1):
+        lt.append(str(int(year)+index))
+    lt.dump(Config.lumar_file)
 
-    # lt=LumarTaboo()
-    # lt.append("2015")
-    # print lt
+def main():
+    now=datetime.datetime.now()
+    dump_holiday(now.year)
+    if Config.luma_type:
+        dump_lumartaboo(now.year)
 if __name__ == "__main__":
     main()
 
