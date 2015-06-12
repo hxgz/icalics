@@ -367,9 +367,12 @@ def o_created(event, container):
 
 @Event._outputs
 def o_start(event, container):
+    cl_param={}
+    if event._begin_precision == "day":
+        cl_param = {"VALUE":["DATE"]}
     if event.begin:
         container.append(
-            ContentLine('DTSTART', value=arrow_to_iso(event.begin)))
+            ContentLine('DTSTART', value=arrow_to_iso(event.begin,event._begin_precision),params=cl_param))
 
     # TODO : take care of precision
 

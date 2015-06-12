@@ -154,8 +154,10 @@ def get_arrow(value):
         return arrow.get(value)
 
 
-def arrow_to_iso(instant):
+def arrow_to_iso(instant,precision="second"):
     # set to utc, make iso, remove timezone
+    if precision == "day":
+        return arrow.get(instant.astimezone(tzutc)).format('YYYYMMDD')
     instant = arrow.get(instant.astimezone(tzutc)).format('YYYYMMDDTHHmmss')
     return instant + 'Z'
 
