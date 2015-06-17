@@ -33,9 +33,14 @@ class Holiday(Calendar):
             if dt.weekday() in weekend:
                 try:
                     if DateInfos[_yearmonthday] == self._FREEDAY:
-                        del DateInfos[_yearmonthday]
+                        day_before = dt+datetime.timedelta(days=-1)
+                        day_after = dt+datetime.timedelta(days=1)
+
+                        if (dt.weekday() == 5 and DateInfos.get(day_before.strftime('%Y%m%d')) != self._FREEDAY) or (dt.weekday() == 6 and DateInfos.get(day_after.strftime('%Y%m%d')) != self._FREEDAY):
+                            del DateInfos[_yearmonthday]
                 except KeyError:
                     DateInfos[_yearmonthday] = self._WORKDAY
+
         return DateInfos
     def _get_holiday(self,year):
         months=[year+ "%02d" % x for x in range(1,13)]
